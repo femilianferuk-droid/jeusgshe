@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Monkey · high‑tech cyberpunk</title>
+    <style>
+        /* ===== СБРОС И ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0b0e1a;
+            --neon-green: #0f0;
+            --neon-orange: #ff6a00;
+            --accent-cyan: #00f7ff;
+            --grid-color: rgba(0, 255, 0, 0.1);
+            --card-bg: rgba(18, 25, 45, 0.8);
+            --glitch-offset: 2px;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #e0f0ff;
+            line-height: 1.5;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ===== ГЛИТЧ-ЭФФЕКТЫ И СЕТКА ===== */
+        .glitch-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.6;
+        }
+
+        .glitch-grid::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg, 
+                rgba(0,255,0,0.03) 0px, 
+                rgba(255,106,0,0.02) 2px, 
+                transparent 4px);
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+
+        /* имитация кода на фоне */
+        .code-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(45deg, 
+                rgba(0, 255, 0, 0.02) 0px, 
+                rgba(0, 255, 0, 0.02) 20px,
+                rgba(255, 106, 0, 0.01) 20px,
+                rgba(255, 106, 0, 0.01) 40px);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: var(--neon-green);
+            line-height: 1.8;
+            white-space: pre;
+            opacity: 0.15;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .code-rain::after {
+            content: "const monkey = 'dev';\nif(tech) { hack.cyber() }\n 0x7F3A >> 2 // обезьяний код\n while(neon) { glow++ }\n--[[]]--->>> glitch;";
+            position: absolute;
+            bottom: 10%;
+            left: 5%;
+            color: var(--neon-orange);
+            opacity: 0.5;
+            font-size: 12px;
+            transform: skewX(-5deg);
+        }
+
+        /* ===== ОСНОВНОЙ КОНТЕЙНЕР ===== */
+        .container {
+            width: 100%;
+            max-width: 1300px;
+            padding: 20px 30px;
+            position: relative;
+            z-index: 10;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* ===== ШАПКА ===== */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px 0;
+            border-bottom: 2px solid var(--neon-green);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            margin-bottom: 10px;
+            background: rgba(11, 14, 26, 0.7);
+            backdrop-filter: blur(3px);
+            position: relative;
+        }
+
+        .logo-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .monkey-logo {
+            font-size: 4rem;
+            filter: drop-shadow(0 0 8px var(--neon-green));
+            position: relative;
+            transform: scaleX(-1); /* для стиля */
+        }
+
+        .monkey-logo span {
+            display: inline-block;
+            transform: scaleX(-1);
+            filter: drop-shadow(2px 2px 0 var(--neon-orange));
+        }
+
+        .logo-text h1 {
+            font-size: 2.8rem;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #fff 0%, var(--neon-green) 60%, var(--neon-orange) 80%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-orange);
+        }
+
+        .glitch-header {
+            position: relative;
+        }
+        .glitch-header::before,
+        .glitch-header::after {
+            content: "Dev Monkey";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+        .glitch-header::before {
+            color: var(--neon-orange);
+            z-index: -1;
+            transform: translate(3px, 1px);
+        }
+        .glitch-header::after {
+            color: var(--neon-green);
+            z-index: -2;
+            transform: translate(-3px, -1px);
+        }
+
+        /* ===== КАРТОЧКИ (ОБЩИЕ) ===== */
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-left: 6px solid var(--neon-orange);
+            padding-left: 18px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 5px var(--neon-orange);
+        }
+
+        .grid-2, .grid-3 {
+            display: grid;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        /* карточка (общий стиль) */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 255, 0, 0.25);
+            border-radius: 18px;
+            padding: 28px 22px;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 255, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 25px var(--neon-green), 0 6px 10px rgba(0,255,0,0.2);
+            transform: translateY(-3px);
+        }
+
+        .card::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--neon-green), var(--neon-orange));
+            opacity: 0.7;
+        }
+
+        /* иконки стилизация */
+        .icon-large {
+            font-size: 3.2rem;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 6px currentColor);
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+        }
+
+        .card-desc {
+            font-size: 1rem;
+            color: #b0d0ff;
+            border-left: 2px solid var(--neon-orange);
+            padding-left: 12px;
+            opacity: 0.9;
+        }
+
+        /* яркая кнопка для маркетплейса */
+        .special-card {
+            background: rgba(255, 106, 0, 0.18);
+            border: 2px solid var(--neon-orange);
+            box-shadow: 0 0 30px var(--neon-orange);
+            backdrop-filter: blur(12px);
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .special-card .card-title {
+            font-size: 2rem;
+            -webkit-text-fill-color: initial;
+            color: var(--neon-orange);
+            text-shadow: 0 0 15px currentColor;
+            background: none;
+        }
+
+        .special-card .icon-large {
+            color: var(--neon-orange);
+        }
+
+        .neon-button-effect {
+            display: inline-block;
+            padding: 8px 20px;
+            border: 2px solid var(--neon-green);
+            border-radius: 40px;
+            font-weight: bold;
+            color: #000;
+            background: var(--neon-green);
+            margin-top: 10px;
+            box-shadow: 0 0 20px var(--neon-green);
+            transition: 0.2s;
+            cursor: default;
+            text-transform: uppercase;
+            font-size: 1rem;
+        }
+
+        .special-card:hover {
+            border-color: white;
+            box-shadow: 0 0 45px var(--neon-orange);
+        }
+
+        /* monkey-специфичные иконки (псевдо) */
+        .tg-icon {
+            background: rgba(0,255,0,0.1);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== СОЦСЕТИ (ТГ КАНАЛЫ) ===== */
+        .channels .card {
+            background: linear-gradient(145deg, #0d1424, #050813);
+        }
+
+        /* ===== ФУТЕР ===== */
+        .footer {
+            margin-top: 40px;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            border-top: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            text-shadow: 0 0 8px var(--neon-green);
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(3px);
+            position: relative;
+        }
+
+        .footer span {
+            color: var(--neon-orange);
+            font-weight: 600;
+        }
+
+        /* дополнительные глитч-полосы */
+        .glitch-line {
+            width: 100%;
+            height: 2px;
+            background: repeating-linear-gradient(90deg, var(--neon-green), var(--neon-orange), transparent);
+            margin: 10px 0;
+        }
+
+        /* адаптив */
+        @media (max-width: 900px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .logo-text h1 {
+                font-size: 2rem;
+            }
+        }
+        /* кибер-обезьяньи детали */
+        .card .icon-large img {
+            display: none; /* эмоджи в качестве иконок */
+        }
+    </style>
+</head>
+<body>
+    <!-- Фоновые элементы -->
+    <div class="glitch-grid"></div>
+    <div class="code-rain"></div>
+
+    <div class="container">
+        <!-- HEADER с логотипом и названием -->
+        <header class="header">
+            <div class="logo-wrapper">
+                <div class="monkey-logo">
+                    <span>🐵</span> 
+                    <span style="font-size: 0.6rem; vertical-align: super; color: var(--neon-orange);">🎧</span>
+                    <span style="position: relative; left: -10px; top: 5px;">👓</span>
+                </div>
+                <div class="logo-text glitch-header">
+                    <h1>Dev Monkey</h1>
+                </div>
+            </div>
+            <div style="flex:1; text-align: right; font-family: monospace; color: var(--neon-green); opacity:0.8;">&lt;high_tech/&gt; 0x7D3</div>
+        </header>
+
+        <!-- Блок СОЦСЕТИ: Наши каналы -->
+        <section class="channels">
+            <h2 class="section-title">⎯ Наши каналы ⎯</h2>
+            <div class="grid-2">
+                <!-- Карточка MonkeyStarvell -->
+                <div class="card">
+                    <span class="icon-large">⭐📈</span>
+                    <div class="card-title">MonkeyStarvell</div>
+                    <div class="card-desc">Продажи на Starvell · аналитика и продвижение. Только эксклюзив</div>
+                    <div style="margin-top: 12px; display: flex; align-items: center; gap: 10px;">
+                        <span class="tg-icon" style="color: var(--neon-green);">📱</span>
+                        <span style="color: var(--neon-orange);">@monkeystar</span>
+                    </div>
+                    <div style="font-size: 0.9rem; color: #0f0; letter-spacing: 1px;">✦ звездные графики</div>
+                </div>
+                <!-- Карточка MonkeyNumber -->
+                <div class="card">
+                    <span class="icon-large">📀📶</span>
+                    <div class="card-title">MonkeyNumber</div>
+                    <div class="card-desc">Магазин Telegram аккаунтов · сим-карты, цифры, виртуал</div>
+                    <div style="margin-top: 12px; display: flex; align-items: center; gap: 10px;">
+                        <span class="tg-icon" style="color: var(--neon-orange);">💳</span>
+                        <span style="color: var(--neon-green);">@monkeynum</span>
+                    </div>
+                    <div style="font-size: 0.9rem; color: #ffaa33;">более 5000 номеров</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Блок БОТЫ: три карточки -->
+        <section class="bots">
+            <h2 class="section-title">⎯ Наши боты ⎯</h2>
+            <div class="grid-3">
+                <!-- Бот для покупки аккаунтов MonkeyNumberBot -->
+                <div class="card">
+                    <span class="icon-large">🛒🤖</span>
+                    <div class="card-title">MonkeyNumberBot</div>
+                    <div class="card-desc">Купить аккаунты Telegram · автоматическая выдача</div>
+                    <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--neon-green);">бот</span>
+                        <span style="background: #000; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--neon-green); font-size: 0.9rem;">@MonkeyNumberBot</span>
+                    </div>
+                </div>
+                <!-- Бот для мультиаккаунтов MonkeyGramRobot (шестеренки/робот) -->
+                <div class="card">
+                    <span class="icon-large">⚙️🗿</span>
+                    <div class="card-title">MonkeyGramRobot</div>
+                    <div class="card-desc">Мультиаккаунты · автоворонка, прогрев, постинг</div>
+                    <div style="margin-top: auto; display: flex; justify-content: space-between;">
+                        <span style="color: var(--neon-orange);">🤖 мультибот</span>
+                        <span style="background: #000; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--neon-orange);">@MonkeyGramRobot</span>
+                    </div>
+                </div>
+                <!-- ОСОБАЯ КАРТОЧКА: маркетплейс MonkeyMarketChanBot (яркая, неоновая) -->
+                <div class="card special-card">
+                    <span class="icon-large" style="font-size: 4rem;">🏪✨</span>
+                    <div class="card-title">MonkeyMarketChanBot</div>
+                    <div class="card-desc" style="color: white; border-left-color: var(--neon-green);">Маркетплейс каналов · реклама / закупы / биржа</div>
+                    <div class="neon-button-effect">✦ MARKETPLACE ✦</div>
+                    <div style="margin-top: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.5); padding: 5px; border-radius: 30px;">@MonkeyMarketChanBot</div>
+                    <div style="position: absolute; bottom: 5px; right: 10px; opacity:0.3;">✦</div>
+                </div>
+            </div>
+            <!-- подчеркивание-глитч -->
+            <div class="glitch-line"></div>
+        </section>
+
+        <!-- ФУТЕР минималистичный -->
+        <footer class="footer">
+            <span>Dev Monkey 2026</span> 
+            <span style="margin:0 15px;">⏚</span> 
+            <span style="color: var(--neon-green);">#обезьяны_кода</span>
+        </footer>
+    </div>
+
+    <!-- маленькие глитч-элементы для атмосферы -->
+    <div style="position: fixed; bottom: 20px; left: 20px; color: var(--neon-orange); font-size: 12px; opacity:0.4; z-index:99; writing-mode: vertical-rl;">&lt; CYBER /&gt;</div>
+</body>
+</html>
